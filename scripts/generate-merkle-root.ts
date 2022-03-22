@@ -11,8 +11,19 @@ program
 
 program.parse(process.argv)
 
-const json = JSON.parse(fs.readFileSync(program.input, { encoding: 'utf8' }))
+const AIRDROP_AMOUNT = 100000000000;   // 1000 cTokens
+const outputPath = 'scripts/result.json';
 
-if (typeof json !== 'object') throw new Error('Invalid JSON')
+const jsonAccounts = JSON.parse(fs.readFileSync(program.input, { encoding: 'utf8' }))
 
-console.log(JSON.stringify(parseBalanceMap(json)))
+if (typeof jsonAccounts !== 'object') throw new Error('Invalid JSON')
+
+type BalanceMapFormat = { [account: string]: number | string }
+const balanceMap: BalanceMapFormat = {};
+
+for (const account of jsonAccounts) {
+  balanceMap[account] = AIRDROP_AMOUNT;
+}
+
+const data = JSON.stringify(parseBalanceMap(balanceMap), null, 2);
+fs.writeFileSync(outputPath, data);
